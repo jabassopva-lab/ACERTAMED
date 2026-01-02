@@ -96,7 +96,13 @@ const Header: React.FC<HeaderProps> = ({
       setLogoClickCount(newCount);
       if (clickTimerRef.current) clearTimeout(clickTimerRef.current);
       clickTimerRef.current = setTimeout(() => setLogoClickCount(0), 1000);
-      if (newCount === 5) { onToggleLockVisibility(); setLogoClickCount(0); }
+      
+      // Clique Secreto: 5 Vezes na Logo
+      if (newCount === 5) { 
+          onToggleLockVisibility(); 
+          setLogoClickCount(0);
+          alert("🔑 Modo administrativo ativado. Clique no cadeado para entrar.");
+      }
   };
 
   const saveLogoUrl = (e: React.FormEvent) => {
@@ -138,19 +144,8 @@ const Header: React.FC<HeaderProps> = ({
                               autoFocus
                           />
                           <div className="flex gap-2">
-                              <button 
-                                  type="button" 
-                                  onClick={() => setIsEditingLogo(false)}
-                                  className="flex-1 px-3 py-2 bg-gray-100 text-gray-600 text-[10px] font-bold rounded uppercase hover:bg-gray-200"
-                              >
-                                  Cancelar
-                              </button>
-                              <button 
-                                  type="submit" 
-                                  className="flex-1 px-3 py-2 bg-brand-blue text-white text-[10px] font-bold rounded uppercase hover:bg-slate-900 shadow-md"
-                              >
-                                  Aplicar
-                              </button>
+                              <button type="button" onClick={() => setIsEditingLogo(false)} className="flex-1 px-3 py-2 bg-gray-100 text-gray-600 text-[10px] font-bold rounded uppercase hover:bg-gray-200">Cancelar</button>
+                              <button type="submit" className="flex-1 px-3 py-2 bg-brand-blue text-white text-[10px] font-bold rounded uppercase hover:bg-slate-900 shadow-md">Aplicar</button>
                           </div>
                       </form>
                   </div>
@@ -164,43 +159,33 @@ const Header: React.FC<HeaderProps> = ({
 
             <div className="hidden md:flex items-center gap-2 relative flex-1 justify-end">
                {(isAdminMode || isSubscriber) && (
-                   <button 
-                     onClick={onOpenDesigner}
-                     className="px-3 py-2 bg-gradient-to-r from-brand-teal to-brand-blue text-white text-[10px] font-bold rounded-lg shadow-lg hover:shadow-brand-teal/30 transition-all flex items-center gap-1.5 border border-white/20 whitespace-nowrap"
-                   >
-                       🎨 Designer
-                   </button>
+                   <button onClick={onOpenDesigner} className="px-3 py-2 bg-gradient-to-r from-brand-teal to-brand-blue text-white text-[10px] font-bold rounded-lg shadow-lg hover:shadow-brand-teal/30 transition-all flex items-center gap-1.5 border border-white/20 whitespace-nowrap">🎨 Designer</button>
                )}
                
-               <button 
-                 onClick={onDownloadCatalog}
-                 className="px-3 py-2 bg-white/10 hover:bg-white/20 text-white text-[10px] font-bold rounded-lg transition-all flex items-center gap-1.5 border border-white/10 whitespace-nowrap"
-               >
+               <button onClick={onDownloadCatalog} className="px-3 py-2 bg-white/10 hover:bg-white/20 text-white text-[10px] font-bold rounded-lg transition-all flex items-center gap-1.5 border border-white/10 whitespace-nowrap">
                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-3.5 h-3.5"><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m.75 12 3 3m0 0 3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" /></svg>
                    PDF
                </button>
 
                {isAdminMode && (
                    <div className="flex items-center gap-1 bg-white/10 p-1 rounded-lg border border-white/10 overflow-x-auto">
-                       <button onClick={onOpenOrderManager} className="relative px-2 py-1.5 text-[10px] font-bold bg-white/10 text-white rounded hover:bg-white/20 transition-colors whitespace-nowrap">
-                           Pedidos {pendingOrdersCount > 0 && <span className="ml-1 bg-red-600 px-1 rounded-full text-[9px]">{pendingOrdersCount}</span>}
-                       </button>
+                       <button onClick={onOpenOrderManager} className="relative px-2 py-1.5 text-[10px] font-bold bg-white/10 text-white rounded hover:bg-white/20 transition-colors whitespace-nowrap">Pedidos {pendingOrdersCount > 0 && <span className="ml-1 bg-red-600 px-1 rounded-full text-[9px]">{pendingOrdersCount}</span>}</button>
                        <button onClick={onOpenSubscriberManager} className="px-2 py-1.5 text-[10px] font-bold bg-white/10 text-white rounded hover:bg-white/20 transition-colors whitespace-nowrap">Assinantes</button>
                        <button onClick={onOpenResellerManager} className="px-2 py-1.5 text-[10px] font-bold bg-white/10 text-white rounded hover:bg-white/20 transition-colors whitespace-nowrap">Revendedores</button>
-                       
                        <div className="h-4 w-px bg-white/20 mx-0.5"></div>
-                       
                        <button onClick={onExportData} className="px-2 py-1.5 text-[10px] font-bold bg-blue-600 text-white rounded hover:bg-blue-500" title="Backup">⬇️</button>
                        <button onClick={() => fileInputRef.current?.click()} className="px-2 py-1.5 text-[10px] font-bold bg-slate-700 text-white rounded hover:bg-slate-600" title="Restaurar">⬆️</button>
                        <input type="file" ref={fileInputRef} className="hidden" accept=".json" onChange={(e) => e.target.files?.[0] && onImportData(e.target.files[0])} />
-                       
                        <button onClick={onGenerateCode} className="px-2 py-1.5 text-[10px] font-bold bg-orange-600 text-white rounded hover:bg-orange-500 shadow-sm flex items-center gap-1 border border-orange-400 whitespace-nowrap">🚀 Código</button>
                    </div>
                )}
 
                {!adminLockHidden && (
-                   <button onClick={onToggleAdmin} className={`text-[10px] font-bold px-3 py-1.5 rounded transition-colors uppercase tracking-wider whitespace-nowrap ${isAdminMode ? 'bg-red-600 text-white' : 'bg-white/10 text-white/60 hover:bg-white/20'}`}>
-                       {isAdminMode ? 'Sair' : 'Admin'}
+                   <button onClick={onToggleAdmin} className={`text-[10px] font-bold px-3 py-1.5 rounded transition-all uppercase tracking-wider whitespace-nowrap flex items-center gap-1.5 shadow-lg border ${isAdminMode ? 'bg-red-600 text-white border-red-500' : 'bg-white text-brand-blue border-white hover:bg-gray-100'}`}>
+                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-3.5 h-3.5">
+                           {isAdminMode ? <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" /> : <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25Z" />}
+                       </svg>
+                       {isAdminMode ? 'Sair' : 'Acesso Restrito'}
                    </button>
                )}
 
@@ -229,9 +214,7 @@ const Header: React.FC<HeaderProps> = ({
 
                <div className="flex items-center gap-2 pl-2 border-l border-white/10">
                   <button onClick={onOpenCart} className="relative p-1.5 text-white/80 hover:text-brand-teal transition-colors shrink-0">
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
-                      </svg>
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" /></svg>
                       {cartItemCount > 0 && <span className="absolute -top-0.5 -right-0.5 flex items-center justify-center w-4 h-4 text-[9px] font-bold text-white bg-safety-red rounded-full border border-brand-blue">{cartItemCount}</span>}
                   </button>
                   <button onClick={() => setIsQrModalOpen(true)} className="p-1.5 text-white/40 hover:text-white transition-colors shrink-0"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0 1 3.75 9.375v-4.5ZM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 0 1-1.125-1.125v-4.5ZM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0 1 13.5 9.375v-4.5Z" /></svg></button>
@@ -251,15 +234,9 @@ const Header: React.FC<HeaderProps> = ({
             </div>
           </div>
         </div>
-
         <div className="h-1 w-full bg-safety-stripes opacity-30"></div>
       </header>
-      
-      <SiteQrModal 
-        isOpen={isQrModalOpen} 
-        onClose={() => setIsQrModalOpen(false)} 
-        storeName={storeName} 
-      />
+      <SiteQrModal isOpen={isQrModalOpen} onClose={() => setIsQrModalOpen(false)} storeName={storeName} />
     </>
   );
 };

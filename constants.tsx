@@ -1,3 +1,4 @@
+
 export const APP_CONFIG = {
   "storeName": "Sinalização de Segurança",
   "whatsappNumber": "5566992442998",
@@ -8,7 +9,7 @@ export const APP_CONFIG = {
   "subscriptionMonthlyPrice": "19,90",
   "pdfCatalogUrl": "https://drive.google.com/file/d/1T-fC801xSe2iZa9mFTZDIjInwa0JYiyc/view?usp=drive_link",
   "heroTitle": "SINALIZAÇÃO DE SEGURANÇA DO TRABALHO",
-  "adminLockHidden": false,
+  "adminLockHidden": true,
   "buildId": "1767375308848",
   "allowedCepPrefixes": [
     "78850"

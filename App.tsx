@@ -14,10 +14,11 @@ import SupabaseSetupModal from './components/SupabaseSetupModal';
 import Modal from './components/Modal';
 import SignDesigner from './components/SignDesigner';
 import CodeModal from './components/CodeModal';
+import AdminAuthModal from './components/AdminAuthModal';
 
 import { APP_CONFIG, SAFETY_SIGNS } from './constants';
 import { Sign, Subscriber, CartItem, Order, SignCategory } from './types';
-import { isConfigured as isSupabaseConfigured, saveSubscriberToCloud, subscribeToOrders, subscribeToSubscribers, updateOrderStatusInCloud, deleteOrderInCloud, saveOrderToCloud, updateSubscriberInCloud, deleteSubscriberInCloud } from './supabaseClient';
+import { isConfigured as isSupabaseConfigured, saveOrderToCloud, subscribeToOrders, subscribeToSubscribers, updateOrderStatusInCloud, deleteOrderInCloud, saveSubscriberToCloud, updateSubscriberInCloud, deleteSubscriberInCloud } from './supabaseClient';
 import { processGoogleDriveLink } from './utils';
 import { generateCatalogPDF } from './utils/catalogGenerator';
 
@@ -38,8 +39,11 @@ function App() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [activeCategory, setActiveCategory] = useState('Todos');
+  
   const [isAdminMode, setIsAdminMode] = useState(false);
   const [adminLockHidden, setAdminLockHidden] = useState<boolean>(APP_CONFIG.adminLockHidden);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  
   const [subscribers, setSubscribers] = useState<Subscriber[]>([]);
   const [currentSubscriber, setCurrentSubscriber] = useState<Subscriber | null>(null);
   const [selectedSign, setSelectedSign] = useState<Sign | null>(null);
@@ -59,7 +63,6 @@ function App() {
   const [heroTitle, setHeroTitle] = useState(() => localStorage.getItem('app_hero_title') || APP_CONFIG.heroTitle);
   const [logoUrl, setLogoUrl] = useState(() => localStorage.getItem('app_custom_logo') || APP_CONFIG.logoUrl);
 
-  // Persistência automática no localStorage sempre que o catálogo mudar
   useEffect(() => {
     localStorage.setItem('app_signs_data', JSON.stringify(signs));
   }, [signs]);
@@ -70,13 +73,10 @@ function App() {
     if (resellerParam) setReseller(resellerParam);
   }, []);
 
-  // Monitora erros de conexão do Supabase para alertar o usuário
   useEffect(() => {
     const handleTableMissing = () => {
-        // Abre o modal de setup automaticamente se for detectado erro de tabela ausente
         setIsSupabaseModalOpen(true);
     };
-
     window.addEventListener('supabase_table_missing', handleTableMissing);
     return () => window.removeEventListener('supabase_table_missing', handleTableMissing);
   }, []);
@@ -112,13 +112,11 @@ function App() {
     }
   };
 
-  // Função robusta de exclusão
   const handleDeleteSign = useCallback((id: number) => {
     setSigns(prev => {
         const filtered = prev.filter(s => s.id !== id);
         return filtered;
     });
-    console.log(`✅ Placa ${id} removida do estado.`);
   }, []);
 
   const handleExportData = () => {
@@ -163,14 +161,28 @@ function App() {
           adminLockHidden,
           buildId: Date.now().toString()
       };
-
-      const code = `
-export const APP_CONFIG = ${JSON.stringify(config, null, 2)};
-
-export const SAFETY_SIGNS = ${JSON.stringify(signs, null, 2)};
-`;
+      const code = `export const APP_CONFIG = ${JSON.stringify(config, null, 2)};\n\nexport const SAFETY_SIGNS = ${JSON.stringify(signs, null, 2)};`;
       setGeneratedCode(code.trim());
       setIsCodeModalOpen(true);
+  };
+
+  const handleToggleAdmin = () => {
+      if (!isAdminMode) {
+          setIsAuthModalOpen(true);
+      } else {
+          setIsAdminMode(false);
+      }
+  };
+
+  const handleAdminAuth = (password: string) => {
+      if (password === "ADMIN123") {
+          setIsAdminMode(true);
+          setIsAuthModalOpen(false);
+      } else {
+          // Dispara erro no modal através de uma lógica interna se necessário
+          // Por simplicidade, alert aqui mas o ideal é o modal lidar
+          alert("❌ Senha incorreta!");
+      }
   };
 
   const handleCreateFreeAccount = (name: string, city: string, resellerName?: string) => {
@@ -219,7 +231,7 @@ export const SAFETY_SIGNS = ${JSON.stringify(signs, null, 2)};
         onExportData={handleExportData}
         onImportData={handleImportData}
         isAdminMode={isAdminMode}
-        onToggleAdmin={() => setIsAdminMode(!isAdminMode)}
+        onToggleAdmin={handleToggleAdmin}
         adminLockHidden={adminLockHidden}
         onToggleLockVisibility={() => setAdminLockHidden(prev => !prev)}
         isSubscriber={!!currentSubscriber}
@@ -288,7 +300,7 @@ export const SAFETY_SIGNS = ${JSON.stringify(signs, null, 2)};
       </main>
       
       <footer className="mt-auto">
-        <Footer whatsappNumber={APP_CONFIG.whatsappNumber} storeName={storeName} resellerName={reseller} />
+        <Footer storeName={storeName} resellerName={reseller} />
       </footer>
       
       <CartDrawer 
@@ -342,8 +354,8 @@ export const SAFETY_SIGNS = ${JSON.stringify(signs, null, 2)};
       <SubscriberManager isOpen={isSubscriberManagerOpen} onClose={() => setIsSubscriberManagerOpen(false)} subscribers={subscribers} onAddSubscriber={(n, t, v, r, p, c) => { const newSub = { id: Math.random().toString(), name: n, type: t, validUntil: v, reseller: r, planType: p, commission: c, accessKey: Math.random().toString(36).substr(2, 6).toUpperCase(), isActive: true, createdAt: new Date().toISOString(), credits: t === 'trial' ? 5 : 0 }; if (isSupabaseConfigured) saveSubscriberToCloud(newSub); setSubscribers(prev => [...prev, newSub]); }} onToggleStatus={(id) => { const sub = subscribers.find(s => s.id === id); if (sub && isSupabaseConfigured) updateSubscriberInCloud(id, { isActive: !sub.isActive }); setSubscribers(prev => prev.map(s => s.id === id ? { ...s, isActive: !s.isActive } : s)); }} onDeleteSubscriber={(id) => { if (isSupabaseConfigured) deleteSubscriberInCloud(id); setSubscribers(prev => prev.filter(s => s.id !== id)); }} onUpdateSubscriber={(id, d) => { if (isSupabaseConfigured) updateSubscriberInCloud(id, d); setSubscribers(prev => prev.map(s => s.id === id ? { ...s, ...d } : s)); }} isOnline={isSupabaseConfigured} />
       <ResellerManager isOpen={isResellerManagerOpen} onClose={() => setIsResellerManagerOpen(false)} />
       <SupabaseSetupModal isOpen={isSupabaseModalOpen} onClose={() => setIsSupabaseModalOpen(false)} />
-      
       <CodeModal isOpen={isCodeModalOpen} onClose={() => setIsCodeModalOpen(false)} code={generatedCode} />
+      <AdminAuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} onConfirm={handleAdminAuth} />
     </div>
   );
 }
