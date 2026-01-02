@@ -1,4 +1,3 @@
-
 import { Sign, SignCategory } from '../types';
 import { processGoogleDriveLink } from '../utils';
 
@@ -8,14 +7,12 @@ interface CatalogOptions {
   whatsappNumber: string;
 }
 
-// Função auxiliar para obter o código de exibição
 const getSignCode = (sign: Sign) => sign.code || `REF-${sign.id.toString().slice(-4)}`;
 
 export const generateCatalogPDF = (signs: Sign[], options: CatalogOptions) => {
   const printWindow = window.open('', '_blank');
   if (!printWindow) return;
 
-  // Aumentado de 9 para 15 (Grid 3x5) para caber mais placas
   const ITEMS_PER_PAGE = 15; 
 
   const groupedSigns: Record<string, Sign[]> = {};
@@ -28,9 +25,8 @@ export const generateCatalogPDF = (signs: Sign[], options: CatalogOptions) => {
       groupedSigns[sign.category].push(sign);
     });
 
-  // SEQUÊNCIA SOLICITADA PELO USUÁRIO (Compatível com 1-10)
   const categoriesOrder = [
-    SignCategory.Warning,      // 2 AVISO (O 1 Placas Editaveis é filtrado acima)
+    SignCategory.Warning,      // 2 AVISO
     SignCategory.Attention,    // 3 ATENÇÃO
     SignCategory.Security,     // 4 SEGURANÇA
     SignCategory.Info,         // 5 INFORMATIVAS
