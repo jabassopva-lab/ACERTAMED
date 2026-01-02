@@ -84,7 +84,10 @@ const Modal: React.FC<ModalProps> = ({
             
             const categoryToUse = isAdminMode ? editCategory : sign.category;
             const titleToUse = isAdminMode ? editTitle : sign.title;
-            const contentToCheck = (categoryToUse + ' ' + titleToUse).toUpperCase();
+            const descriptionToUse = sign.description || '';
+            
+            // LÓGICA DE DETECÇÃO CORRIGIDA: Verifica categoria, título E descrição
+            const contentToCheck = (categoryToUse + ' ' + titleToUse + ' ' + descriptionToUse).toUpperCase();
             
             if (contentToCheck.includes('PROIBIDO') || categoryToUse === 'Proibição') {
                 headerColor = '#DC2626'; headerText = 'PROIBIDO';

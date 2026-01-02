@@ -54,7 +54,6 @@ const SignCard: React.FC<SignCardProps> = ({
   const isHidden = sign.isHidden;
   const displayCode = sign.code || sign.id.toString().slice(-4);
 
-  // Resetar confirmação de exclusão se o mouse sair do card
   const handleMouseLeave = () => {
     if (confirmDelete) setConfirmDelete(false);
   };
@@ -87,15 +86,16 @@ const SignCard: React.FC<SignCardProps> = ({
         let isDanger = false;
 
         const cat = (sign.category || '').toUpperCase();
-        const content = (sign.title + ' ' + (sign.description || '')).toUpperCase();
+        // LÓGICA DE DETECÇÃO CORRIGIDA: Inclui a descrição para diferenciar templates editáveis
+        const content = (sign.title + ' ' + (sign.description || '') + ' ' + (sign.category || '')).toUpperCase();
         
-        if (cat === 'PROIBIÇÃO' || content.includes('PROIBIDO')) {
+        if (content.includes('PROIBIDO') || cat === 'PROIBIÇÃO') {
             headerColor = '#DC2626'; headerText = 'PROIBIDO';
-        } else if (cat === 'PERIGO' || content.includes('PERIGO')) {
+        } else if (content.includes('PERIGO') || cat === 'PERIGO') {
             isDanger = true; headerText = 'PERIGO';
-        } else if (cat === 'ATENÇÃO' || content.includes('ATENÇÃO')) {
+        } else if (content.includes('ATENÇÃO') || cat === 'ATENÇÃO') {
             headerColor = '#FFD700'; headerText = 'ATENÇÃO'; textColor = '#000000';
-        } else if (cat === 'SEGURANÇA' || content.includes('SEGURANÇA')) {
+        } else if (content.includes('SEGURANÇA') || cat === 'SEGURANÇA') {
             headerColor = '#16A34A'; headerText = 'SEGURANÇA';
         }
 
@@ -147,7 +147,6 @@ const SignCard: React.FC<SignCardProps> = ({
         setConfirmDelete(false);
     } else {
         setConfirmDelete(true);
-        // Reset automático após 3 segundos se não clicar de novo
         setTimeout(() => setConfirmDelete(false), 3000);
     }
   };
@@ -163,8 +162,6 @@ const SignCard: React.FC<SignCardProps> = ({
       onClick={onClick}
       onMouseLeave={handleMouseLeave}
     >
-      
-      {/* Botões Administrativos */}
       {isAdminMode && (
           <div className="absolute top-2 left-2 z-20 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
               <button 
