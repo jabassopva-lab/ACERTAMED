@@ -80,7 +80,7 @@ const SignCard: React.FC<SignCardProps> = ({
         ctx.lineWidth = 7;
         ctx.stroke();
         
-        let headerColor = '#009BA5'; 
+        let headerColor = '#2563EB'; // AZUL FORTE (antes era #009BA5)
         let headerText = 'AVISO';
         let textColor = '#FFFFFF';
         let isDanger = false;

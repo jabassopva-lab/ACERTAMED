@@ -77,7 +77,7 @@ const Modal: React.FC<ModalProps> = ({
             const ctx = canvas.getContext('2d');
             if (!ctx) return;
 
-            let headerColor = '#009BA5'; 
+            let headerColor = '#2563EB'; // AZUL FORTE (antes era #009BA5)
             let headerText = 'AVISO'; 
             let headerTextColor = '#FFFFFF';
             let isDangerHeader = false;
