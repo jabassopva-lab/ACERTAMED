@@ -1,0 +1,104 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="referrer" content="no-referrer" />
+    <title>Sinalização de Segurança | Portfólio Industrial</title>
+    <meta name="description" content="Portfólio de Comunicação Visual para Segurança do Trabalho." />
+    <meta name="theme-color" content="#1D4E89" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800;900&family=Roboto+Condensed:ital,wght@0,700;0,900;1,900&display=swap" rel="stylesheet">
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+              display: ['"Roboto Condensed"', 'sans-serif'],
+            },
+            colors: {
+              'brand-teal': '#009BA5',
+              'brand-blue': '#1D4E89',
+              'safety-yellow': '#FFD700',
+              'safety-black': '#111827',
+              'safety-red': '#DC2626',
+              'safety-blue': '#2563EB',
+              'safety-green': '#16A34A',
+              'industrial': {
+                  '50': '#f8fafc',
+                  '100': '#f1f5f9',
+                  '200': '#e2e8f0',
+                  '900': '#0f172a',
+                  '950': '#020617',
+              }
+            },
+            backgroundImage: {
+              'safety-stripes': 'repeating-linear-gradient(45deg, #1D4E89 0, #1D4E89 15px, #009BA5 15px, #009BA5 30px)',
+            },
+            animation: {
+              'fade-in': 'fadeIn 0.3s ease-in-out',
+              'fade-in-up': 'fadeInUp 0.5s ease-out',
+            },
+            keyframes: {
+              fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
+              fadeInUp: { '0%': { opacity: '0', transform: 'translateY(10px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } }
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      html, body {
+        height: auto;
+        min-height: 100%;
+        overflow-x: hidden;
+        overflow-y: auto;
+      }
+      .bg-safety-stripes {
+        background-image: repeating-linear-gradient(45deg, #1D4E89 0, #1D4E89 20px, #009BA5 20px, #009BA5 40px);
+      }
+      .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+      .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; }
+      .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+      .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+      
+      /* Proteção contra download e seleção */
+      img, canvas {
+        -webkit-touch-callout: none !important;
+        -webkit-user-select: none !important;
+        -khtml-user-select: none !important;
+        -moz-user-select: none !important;
+        -ms-user-select: none !important;
+        user-select: none !important;
+        pointer-events: auto;
+      }
+      
+      /* Impedir salvar imagem pelo menu de contexto (fallback) */
+      @media print {
+        .no-print { display: none !important; }
+      }
+    </style>
+    <script type="importmap">
+{
+  "imports": {
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "@supabase/supabase-js": "https://aistudiocdn.com/@supabase/supabase-js@^2.39.0",
+    "firebase/": "https://esm.sh/firebase@^12.7.0/",
+    "vite": "https://esm.sh/vite@^7.3.0",
+    "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.2"
+  }
+}
+</script>
+  </head>
+  <body class="bg-slate-50 text-slate-900 antialiased selection:bg-brand-teal selection:text-white font-sans">
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>
