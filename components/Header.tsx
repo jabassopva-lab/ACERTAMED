@@ -38,7 +38,6 @@ interface HeaderProps {
   pendingOrdersCount?: number;
   onDownloadCatalog?: () => void;
   onViewCatalog?: () => void;
-  onOpenVideoGenerator?: () => void;
 }
 
 const Header: React.FC<HeaderProps> = ({
