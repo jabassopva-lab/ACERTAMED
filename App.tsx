@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import Header from './components/Header';
 import Hero from './components/Hero';
 import PortfolioGrid from './components/PortfolioGrid';
@@ -15,12 +15,14 @@ import Modal from './components/Modal';
 import SignDesigner from './components/SignDesigner';
 import CodeModal from './components/CodeModal';
 import AdminAuthModal from './components/AdminAuthModal';
+import VideoGeneratorModal from './components/VideoGeneratorModal';
+import CatalogViewerModal from './components/CatalogViewerModal';
 
 import { APP_CONFIG, SAFETY_SIGNS } from './constants';
 import { Sign, Subscriber, CartItem, Order, SignCategory } from './types';
 import { isConfigured as isSupabaseConfigured, saveOrderToCloud, subscribeToOrders, subscribeToSubscribers, updateOrderStatusInCloud, deleteOrderInCloud, saveSubscriberToCloud, updateSubscriberInCloud, deleteSubscriberInCloud } from './supabaseClient';
 import { processGoogleDriveLink } from './utils';
-import { generateCatalogPDF } from './utils/catalogGenerator';
+import { generateCatalogPDF, getCatalogHTML } from './utils/catalogGenerator';
 
 function App() {
   const [signs, setSigns] = useState<Sign[]>(() => {
@@ -43,6 +45,7 @@ function App() {
   const [isAdminMode, setIsAdminMode] = useState(false);
   const [adminLockHidden, setAdminLockHidden] = useState<boolean>(APP_CONFIG.adminLockHidden);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [pendingCatalogDownload, setPendingCatalogDownload] = useState(false);
   
   const [subscribers, setSubscribers] = useState<Subscriber[]>([]);
   const [currentSubscriber, setCurrentSubscriber] = useState<Subscriber | null>(null);
@@ -54,6 +57,8 @@ function App() {
   const [isSupabaseModalOpen, setIsSupabaseModalOpen] = useState(false);
   const [isDesignerOpen, setIsDesignerOpen] = useState(false);
   const [isCodeModalOpen, setIsCodeModalOpen] = useState(false);
+  const [isVideoGeneratorOpen, setIsVideoGeneratorOpen] = useState(false);
+  const [isCatalogViewerOpen, setIsCatalogViewerOpen] = useState(false);
   const [generatedCode, setGeneratedCode] = useState('');
   
   const [orders, setOrders] = useState<Order[]>([]);
@@ -62,6 +67,43 @@ function App() {
   const [storeName, setStoreName] = useState(() => localStorage.getItem('app_store_name') || APP_CONFIG.storeName);
   const [heroTitle, setHeroTitle] = useState(() => localStorage.getItem('app_hero_title') || APP_CONFIG.heroTitle);
   const [logoUrl, setLogoUrl] = useState(() => localStorage.getItem('app_custom_logo') || APP_CONFIG.logoUrl);
+
+  // Efeito para gerenciar o botão "Voltar" do navegador/celular quando o modal está aberto
+  useEffect(() => {
+    const handlePopState = (event: PopStateEvent) => {
+      if (selectedSign) {
+        setSelectedSign(null);
+      }
+      if (isCatalogViewerOpen) {
+          setIsCatalogViewerOpen(false);
+      }
+    };
+
+    if (selectedSign || isCatalogViewerOpen) {
+      window.history.pushState({ modalOpen: true }, "");
+      window.addEventListener('popstate', handlePopState);
+    }
+
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, [selectedSign, isCatalogViewerOpen]);
+
+  const handleCloseModal = useCallback(() => {
+    if (selectedSign) {
+      setSelectedSign(null);
+      if (window.history.state?.modalOpen) {
+        window.history.back();
+      }
+    }
+  }, [selectedSign]);
+
+  const handleCloseCatalogViewer = useCallback(() => {
+      setIsCatalogViewerOpen(false);
+      if (window.history.state?.modalOpen) {
+          window.history.back();
+      }
+  }, []);
 
   useEffect(() => {
     localStorage.setItem('app_signs_data', JSON.stringify(signs));
@@ -168,19 +210,30 @@ function App() {
 
   const handleToggleAdmin = () => {
       if (!isAdminMode) {
+          setPendingCatalogDownload(false);
           setIsAuthModalOpen(true);
       } else {
           setIsAdminMode(false);
       }
   };
 
+  const executeDownload = useCallback(() => {
+    generateCatalogPDF(signs, {
+        storeName: storeName,
+        logoUrl: logoUrl,
+        whatsappNumber: APP_CONFIG.whatsappNumber
+    });
+  }, [signs, storeName, logoUrl]);
+
   const handleAdminAuth = (password: string) => {
       if (password === "ADMIN123") {
           setIsAdminMode(true);
           setIsAuthModalOpen(false);
+          if (pendingCatalogDownload) {
+              executeDownload();
+              setPendingCatalogDownload(false);
+          }
       } else {
-          // Dispara erro no modal através de uma lógica interna se necessário
-          // Por simplicidade, alert aqui mas o ideal é o modal lidar
           alert("❌ Senha incorreta!");
       }
   };
@@ -213,13 +266,28 @@ function App() {
       window.open(imageUrl, '_blank');
   };
 
-  const handleDownloadCatalog = () => {
-    generateCatalogPDF(signs, {
-        storeName: storeName,
-        logoUrl: logoUrl,
-        whatsappNumber: APP_CONFIG.whatsappNumber
-    });
+  const handleProtectedDownload = () => {
+    if (isAdminMode) {
+        executeDownload();
+    } else {
+        setPendingCatalogDownload(true);
+        setIsAuthModalOpen(true);
+    }
   };
+
+  const handleOpenVideoGenerator = () => {
+    setIsVideoGeneratorOpen(true);
+  };
+
+  // Gera o HTML do catálogo apenas quando o modal de visualização é aberto
+  const currentCatalogHtml = useMemo(() => {
+      if (!isCatalogViewerOpen) return '';
+      return getCatalogHTML(signs, {
+          storeName: storeName,
+          logoUrl: logoUrl,
+          whatsappNumber: APP_CONFIG.whatsappNumber
+      });
+  }, [isCatalogViewerOpen, signs, storeName, logoUrl]);
 
   return (
     <div className="min-h-screen flex flex-col font-sans">
@@ -260,7 +328,9 @@ function App() {
         onOpenSupabaseModal={() => setIsSupabaseModalOpen(true)}
         onOpenResellerManager={() => setIsResellerManagerOpen(true)}
         pendingOrdersCount={orders.filter(o => o.status === 'Pendente').length}
-        onDownloadCatalog={handleDownloadCatalog}
+        onDownloadCatalog={handleProtectedDownload}
+        onViewCatalog={() => setIsCatalogViewerOpen(true)}
+        onOpenVideoGenerator={handleOpenVideoGenerator}
       />
       
       <main className="flex-grow">
@@ -318,7 +388,7 @@ function App() {
       {selectedSign && (
           <Modal 
             isOpen={!!selectedSign} 
-            onClose={() => setSelectedSign(null)} 
+            onClose={handleCloseModal} 
             sign={selectedSign} 
             isAdminMode={isAdminMode} 
             isSubscriber={!!currentSubscriber} 
@@ -356,6 +426,8 @@ function App() {
       <SupabaseSetupModal isOpen={isSupabaseModalOpen} onClose={() => setIsSupabaseModalOpen(false)} />
       <CodeModal isOpen={isCodeModalOpen} onClose={() => setIsCodeModalOpen(false)} code={generatedCode} />
       <AdminAuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} onConfirm={handleAdminAuth} />
+      <VideoGeneratorModal isOpen={isVideoGeneratorOpen} onClose={() => setIsVideoGeneratorOpen(false)} storeName={storeName} />
+      <CatalogViewerModal isOpen={isCatalogViewerOpen} onClose={handleCloseCatalogViewer} htmlContent={currentCatalogHtml} />
     </div>
   );
 }

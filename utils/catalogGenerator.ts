@@ -1,3 +1,4 @@
+
 import { Sign, SignCategory } from '../types';
 import { processGoogleDriveLink } from '../utils';
 
@@ -9,10 +10,7 @@ interface CatalogOptions {
 
 const getSignCode = (sign: Sign) => sign.code || `REF-${sign.id.toString().slice(-4)}`;
 
-export const generateCatalogPDF = (signs: Sign[], options: CatalogOptions) => {
-  const printWindow = window.open('', '_blank');
-  if (!printWindow) return;
-
+export const getCatalogHTML = (signs: Sign[], options: CatalogOptions): string => {
   const ITEMS_PER_PAGE = 15; 
 
   const groupedSigns: Record<string, Sign[]> = {};
@@ -26,16 +24,16 @@ export const generateCatalogPDF = (signs: Sign[], options: CatalogOptions) => {
     });
 
   const categoriesOrder = [
-    SignCategory.Warning,      // 2 AVISO
-    SignCategory.Attention,    // 3 ATENÇÃO
-    SignCategory.Security,     // 4 SEGURANÇA
-    SignCategory.Info,         // 5 INFORMATIVAS
-    SignCategory.Danger,       // 6 PERIGO
-    SignCategory.Prohibition,  // 7 PROIBIÇÃO
-    SignCategory.Emergency,    // 8 EMERGENCIA
-    SignCategory.Fire,         // 9 COMBATE A INCENDIO
-    SignCategory.Traffic,      // 10 TRANSITO
-    SignCategory.Mandatory     // Extras
+    SignCategory.Warning,
+    SignCategory.Attention,
+    SignCategory.Security,
+    SignCategory.Info,
+    SignCategory.Danger,
+    SignCategory.Prohibition,
+    SignCategory.Emergency,
+    SignCategory.Fire,
+    SignCategory.Traffic,
+    SignCategory.Mandatory
   ];
 
   const sortedCategories = Object.keys(groupedSigns).sort((a, b) => {
@@ -114,22 +112,42 @@ export const generateCatalogPDF = (signs: Sign[], options: CatalogOptions) => {
     }
   });
 
-  const htmlContent = `
+  return `
     <!DOCTYPE html>
     <html lang="pt-BR">
     <head>
         <meta charset="UTF-8">
-        <title>Catálogo - ${options.storeName}</title>
         <style>
             @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
-            body { font-family: 'Inter', sans-serif; margin: 0; padding: 0; color: #1e293b; background: #f1f5f9; }
-            .page { width: 210mm; height: 296mm; padding: 10mm 12mm; margin: 5mm auto; background: white; box-shadow: 0 0 10px rgba(0,0,0,0.1); position: relative; box-sizing: border-box; overflow: hidden; page-break-after: always; }
-            .page:last-of-type { page-break-after: auto !important; }
+            body { 
+              font-family: 'Inter', sans-serif; 
+              margin: 0; 
+              padding: 20px; 
+              color: #1e293b; 
+              background: #f1f5f9; 
+              display: flex; 
+              flex-direction: column; 
+              align-items: center;
+              user-select: none;
+              -webkit-user-select: none;
+            }
+            .page { 
+              width: 210mm; 
+              height: 296mm; 
+              padding: 10mm 12mm; 
+              margin-bottom: 10mm; 
+              background: white; 
+              box-shadow: 0 5px 15px rgba(0,0,0,0.1); 
+              position: relative; 
+              box-sizing: border-box; 
+              overflow: hidden; 
+            }
             .cover { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; background: linear-gradient(135deg, #1D4E89 0%, #009BA5 100%); color: white; padding: 20mm; }
             .cover-logo { background: white; padding: 20px; border-radius: 12px; margin-bottom: 30px; max-width: 280px; }
             .cover-logo img { max-width: 100%; height: auto; }
             .cover h1 { font-size: 36px; font-weight: 900; margin: 0; line-height: 1; }
             .cover h2 { font-size: 16px; font-weight: 400; opacity: 0.8; margin-top: 15px; text-transform: uppercase; letter-spacing: 2px; }
+            .compliance { margin-top: 40px; font-size: 14px; line-height: 1.6; max-width: 80%; opacity: 0.9; }
             .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 5px; margin-bottom: 10px; }
             .header img { height: 28px; }
             .header .title { font-size: 10px; font-weight: 900; color: #1D4E89; text-transform: uppercase; }
@@ -137,27 +155,58 @@ export const generateCatalogPDF = (signs: Sign[], options: CatalogOptions) => {
             .category-title-cont { font-size: 9px; font-weight: 700; text-transform: uppercase; margin-bottom: 10px; color: #94a3b8; }
             .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
             .item { border: 1px solid #f1f5f9; padding: 6px; border-radius: 6px; display: flex; flex-direction: column; background: #fff; }
-            .item-img-container { height: 38mm; background: #f8fafc; display: flex; align-items: center; justify-content: center; margin-bottom: 5px; border-radius: 4px; overflow: hidden; border: 1px solid #f1f5f9; }
-            .item-img-container img { max-width: 95%; max-height: 95%; object-fit: contain; }
+            .item-img-container { 
+              height: 38mm; 
+              background: #f8fafc; 
+              display: flex; 
+              align-items: center; 
+              justify-content: center; 
+              margin-bottom: 5px; 
+              border-radius: 4px; 
+              overflow: hidden; 
+              border: 1px solid #f1f5f9; 
+              pointer-events: none; /* Bloqueia qualquer interação com as imagens das placas */
+            }
+            .item-img-container img { 
+              max-width: 95%; 
+              max-height: 95%; 
+              object-fit: contain; 
+              -webkit-user-drag: none;
+            }
             .item-info h4 { margin: 0; font-size: 8px; font-weight: 900; text-transform: uppercase; color: #1e293b; line-height: 1.1; flex: 1; }
             .sign-code { font-size: 7px; font-weight: 900; background: #f1f5f9; padding: 1px 3px; border-radius: 2px; color: #475569; white-space: nowrap; }
             .footer { position: absolute; bottom: 8mm; left: 12mm; right: 12mm; border-top: 1px solid #f1f5f9; padding-top: 5px; display: flex; justify-content: space-between; font-size: 7px; color: #cbd5e1; font-weight: bold; text-transform: uppercase; }
-            @media print { body { background: white; -webkit-print-color-adjust: exact; } .page { margin: 0; box-shadow: none; width: 210mm; height: 297mm; } .no-print { display: none; } }
+            @media print { body { background: white; padding: 0; } .page { margin: 0; box-shadow: none; page-break-after: always; } }
         </style>
     </head>
-    <body>
+    <body oncontextmenu="return false;">
         ${pagesHtml}
         <script>
+            // Bloqueio de clique direito
+            document.addEventListener('contextmenu', event => event.preventDefault());
+            
+            // Bloqueio de atalhos de teclado comuns para salvar/copiar
+            document.addEventListener('keydown', function(e) {
+                if ((e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'u' || e.key === 'p' || e.key === 'c')) {
+                    e.preventDefault();
+                }
+            });
+
             window.onload = function() {
                 const pages = document.querySelectorAll('.page');
                 pages.forEach((p, i) => { p.innerHTML = p.innerHTML.replace('{PAGE_NUM}', (i + 1)); });
-                setTimeout(() => { window.print(); }, 1200);
             }
         </script>
     </body>
     </html>
   `;
+};
 
-  printWindow.document.write(htmlContent);
+export const generateCatalogPDF = (signs: Sign[], options: CatalogOptions) => {
+  const html = getCatalogHTML(signs, options);
+  const printWindow = window.open('', '_blank');
+  if (!printWindow) return;
+  printWindow.document.write(html);
   printWindow.document.close();
+  setTimeout(() => { printWindow.print(); }, 1500);
 };

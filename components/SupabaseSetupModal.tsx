@@ -1,5 +1,6 @@
 
-import { useState } from 'react';
+// Add React import to the file
+import React, { useState } from 'react';
 import { checkTablesConnection } from '../supabaseClient';
 
 const SQL_FIX_CODE = `-- SCRIPT DE CONFIGURAÇÃO ACERTAMED
@@ -85,6 +86,7 @@ interface SupabaseSetupModalProps {
   onClose: () => void;
 }
 
+// Fixed missing React namespace by adding React import
 const SupabaseSetupModal: React.FC<SupabaseSetupModalProps> = ({ isOpen, onClose }) => {
   const [copied, setCopied] = useState(false);
   const [verifying, setVerifying] = useState(false);
