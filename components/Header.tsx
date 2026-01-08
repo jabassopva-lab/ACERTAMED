@@ -37,7 +37,7 @@ interface HeaderProps {
   onOpenResellerManager?: () => void;
   pendingOrdersCount?: number;
   onDownloadCatalog?: () => void;
-  onViewCatalog?: () => void; // Nova prop
+  onViewCatalog?: () => void;
   onOpenVideoGenerator?: () => void;
 }
 
@@ -66,8 +66,7 @@ const Header: React.FC<HeaderProps> = ({
   onDownloadCatalog,
   onViewCatalog,
   onExportData,
-  onImportData,
-  onOpenVideoGenerator
+  onImportData
 }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [loginKey, setLoginKey] = useState('');
@@ -200,7 +199,6 @@ const Header: React.FC<HeaderProps> = ({
                    <div className="flex items-center gap-1 bg-white/10 p-1 rounded-lg border border-white/10 overflow-x-auto">
                        <button onClick={onOpenOrderManager} className="relative px-2 py-1.5 text-[10px] font-bold bg-white/10 text-white rounded hover:bg-white/20 transition-colors whitespace-nowrap">Pedidos {pendingOrdersCount > 0 && <span className="ml-1 bg-red-600 px-1 rounded-full text-[9px]">{pendingOrdersCount}</span>}</button>
                        <button onClick={onOpenSubscriberManager} className="px-2 py-1.5 text-[10px] font-bold bg-white/10 text-white rounded hover:bg-white/20 transition-colors whitespace-nowrap">Assinantes</button>
-                       <button onClick={onOpenVideoGenerator} className="px-2 py-1.5 text-[10px] font-black bg-indigo-600 text-white rounded hover:bg-indigo-500 shadow-sm flex items-center gap-1 border border-indigo-400 whitespace-nowrap" title="Gerar Vídeo IA">🎬 Vídeo Tour</button>
                        <div className="h-4 w-px bg-white/20 mx-0.5"></div>
                        <button onClick={onExportData} className="px-2 py-1.5 text-[10px] font-bold bg-blue-600 text-white rounded hover:bg-blue-500" title="Backup">⬇️</button>
                        <button onClick={() => fileInputRef.current?.click()} className="px-2 py-1.5 text-[10px] font-bold bg-slate-700 text-white rounded hover:bg-slate-600" title="Restaurar">⬆️</button>
@@ -289,13 +287,6 @@ const Header: React.FC<HeaderProps> = ({
                         <button onClick={() => closeMenuAndCall(onOpenDesigner)} className="w-full flex items-center gap-3 p-3 bg-gradient-to-r from-brand-teal/20 to-brand-blue/20 hover:from-brand-teal/30 hover:to-brand-blue/30 rounded-xl text-sm font-black transition-all border border-brand-teal/30">
                             <span className="text-brand-teal bg-white/10 p-2 rounded-lg">🎨</span>
                             Abrir Studio Designer
-                        </button>
-                    )}
-
-                    {isAdminMode && (
-                         <button onClick={() => closeMenuAndCall(onOpenVideoGenerator)} className="w-full flex items-center gap-3 p-3 bg-indigo-600/20 text-indigo-400 rounded-xl text-sm font-black transition-all border border-indigo-500/30">
-                            <span className="bg-indigo-600 p-2 rounded-lg text-white">🎬</span>
-                            Gerar Vídeo Tour IA
                         </button>
                     )}
 

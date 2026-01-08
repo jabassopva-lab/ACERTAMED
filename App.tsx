@@ -15,7 +15,6 @@ import Modal from './components/Modal';
 import SignDesigner from './components/SignDesigner';
 import CodeModal from './components/CodeModal';
 import AdminAuthModal from './components/AdminAuthModal';
-import VideoGeneratorModal from './components/VideoGeneratorModal';
 import CatalogViewerModal from './components/CatalogViewerModal';
 
 import { APP_CONFIG, SAFETY_SIGNS } from './constants';
@@ -57,7 +56,6 @@ function App() {
   const [isSupabaseModalOpen, setIsSupabaseModalOpen] = useState(false);
   const [isDesignerOpen, setIsDesignerOpen] = useState(false);
   const [isCodeModalOpen, setIsCodeModalOpen] = useState(false);
-  const [isVideoGeneratorOpen, setIsVideoGeneratorOpen] = useState(false);
   const [isCatalogViewerOpen, setIsCatalogViewerOpen] = useState(false);
   const [generatedCode, setGeneratedCode] = useState('');
   
@@ -275,10 +273,6 @@ function App() {
     }
   };
 
-  const handleOpenVideoGenerator = () => {
-    setIsVideoGeneratorOpen(true);
-  };
-
   // Gera o HTML do catálogo apenas quando o modal de visualização é aberto
   const currentCatalogHtml = useMemo(() => {
       if (!isCatalogViewerOpen) return '';
@@ -330,7 +324,6 @@ function App() {
         pendingOrdersCount={orders.filter(o => o.status === 'Pendente').length}
         onDownloadCatalog={handleProtectedDownload}
         onViewCatalog={() => setIsCatalogViewerOpen(true)}
-        onOpenVideoGenerator={handleOpenVideoGenerator}
       />
       
       <main className="flex-grow">
@@ -426,7 +419,6 @@ function App() {
       <SupabaseSetupModal isOpen={isSupabaseModalOpen} onClose={() => setIsSupabaseModalOpen(false)} />
       <CodeModal isOpen={isCodeModalOpen} onClose={() => setIsCodeModalOpen(false)} code={generatedCode} />
       <AdminAuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} onConfirm={handleAdminAuth} />
-      <VideoGeneratorModal isOpen={isVideoGeneratorOpen} onClose={() => setIsVideoGeneratorOpen(false)} storeName={storeName} />
       <CatalogViewerModal isOpen={isCatalogViewerOpen} onClose={handleCloseCatalogViewer} htmlContent={currentCatalogHtml} />
     </div>
   );
