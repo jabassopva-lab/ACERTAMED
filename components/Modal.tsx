@@ -1,6 +1,6 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Sign, SignCategory, SizeType, Subscriber, CartItem } from '../types';
+import { Sign, SignCategory, SizeType, MaterialType, Subscriber, CartItem } from '../types';
 import { processGoogleDriveLink } from '../utils';
 
 interface ModalProps {
@@ -30,6 +30,8 @@ const Modal: React.FC<ModalProps> = ({
     const [customText, setCustomText] = useState('');
     const [customImage, setCustomImage] = useState<string | null>(null);
     const [selectedSize, setSelectedSize] = useState<SizeType>('24x34cm');
+    const [selectedMaterial, setSelectedMaterial] = useState<MaterialType>('Vinil Adesivo');
+    const [specialSize, setSpecialSize] = useState('');
     const [quantity, setQuantity] = useState(1);
     const [imgError, setImgError] = useState(false);
     
@@ -51,6 +53,8 @@ const Modal: React.FC<ModalProps> = ({
             setCustomImage(null); 
             setCustomizationMode('text'); 
             setImgError(false);
+            setSpecialSize('');
+            setSelectedMaterial('Vinil Adesivo');
             
             // Inicializa valores de edição admin
             setEditTitle(sign.title);
@@ -77,7 +81,7 @@ const Modal: React.FC<ModalProps> = ({
             const ctx = canvas.getContext('2d');
             if (!ctx) return;
 
-            let headerColor = '#2563EB'; // AZUL FORTE (antes era #009BA5)
+            let headerColor = '#2563EB'; 
             let headerText = 'AVISO'; 
             let headerTextColor = '#FFFFFF';
             let isDangerHeader = false;
@@ -86,7 +90,6 @@ const Modal: React.FC<ModalProps> = ({
             const titleToUse = isAdminMode ? editTitle : sign.title;
             const descriptionToUse = sign.description || '';
             
-            // LÓGICA DE DETECÇÃO CORRIGIDA: Verifica categoria, título E descrição
             const contentToCheck = (categoryToUse + ' ' + titleToUse + ' ' + descriptionToUse).toUpperCase();
             
             if (contentToCheck.includes('PROIBIDO') || categoryToUse === 'Proibição') {
@@ -359,7 +362,7 @@ const Modal: React.FC<ModalProps> = ({
 
                         <div className="grid grid-cols-2 gap-4">
                             <div>
-                                <label className="text-[9px] text-slate-400 block mb-1 font-black uppercase tracking-widest ml-1">Tamanho</label>
+                                <label className="text-[9px] text-slate-400 block mb-1 font-black uppercase tracking-widest ml-1">Tamanho Padrão</label>
                                 <select 
                                     value={selectedSize} 
                                     onChange={(e) => setSelectedSize(e.target.value as SizeType)} 
@@ -372,13 +375,39 @@ const Modal: React.FC<ModalProps> = ({
                                 </select>
                             </div>
                             <div>
-                                <label className="text-[9px] text-slate-400 block mb-1 font-black uppercase tracking-widest ml-1">Quantidade</label>
-                                <div className="flex items-center bg-slate-50 border-2 border-slate-100 rounded-xl overflow-hidden">
-                                    <button onClick={() => setQuantity(Math.max(1, quantity-1))} className="flex-1 py-3 text-slate-400 hover:text-slate-900 transition-colors font-black">-</button>
-                                    <span className="flex-1 text-center font-black text-sm text-slate-800">{quantity}</span>
-                                    <button onClick={() => setQuantity(quantity+1)} className="flex-1 py-3 text-slate-400 hover:text-slate-900 transition-colors font-black">+</button>
-                                </div>
+                                <label className="text-[9px] text-slate-400 block mb-1 font-black uppercase tracking-widest ml-1">Material</label>
+                                <select 
+                                    value={selectedMaterial} 
+                                    onChange={(e) => setSelectedMaterial(e.target.value as MaterialType)} 
+                                    className="w-full text-xs border-2 border-slate-100 rounded-xl p-3 font-black bg-slate-50 text-slate-800 focus:border-brand-teal outline-none transition-colors"
+                                >
+                                    <option value="Vinil Adesivo">Vinil Adesivo</option>
+                                    <option value="PVC 2mm">PVC 2mm</option>
+                                    <option value="PVC 3mm">PVC 3mm</option>
+                                    <option value="ACM 3mm">ACM 3mm</option>
+                                    <option value="Banner Impresso">Banner Impresso</option>
+                                </select>
                             </div>
+                        </div>
+
+                        <div>
+                            <label className="text-[9px] text-slate-400 block mb-1 font-black uppercase tracking-widest ml-1">Quantidade</label>
+                            <div className="flex items-center bg-slate-50 border-2 border-slate-100 rounded-xl overflow-hidden max-w-[150px]">
+                                <button onClick={() => setQuantity(Math.max(1, quantity-1))} className="flex-1 py-3 text-slate-400 hover:text-slate-900 transition-colors font-black">-</button>
+                                <span className="flex-1 text-center font-black text-sm text-slate-800">{quantity}</span>
+                                <button onClick={() => setQuantity(quantity+1)} className="flex-1 py-3 text-slate-400 hover:text-slate-900 transition-colors font-black">+</button>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label className="text-[9px] text-slate-400 block mb-1 font-black uppercase tracking-widest ml-1">Medida Especial / Outras Observações (Opcional)</label>
+                            <input 
+                                type="text"
+                                value={specialSize}
+                                onChange={(e) => setSpecialSize(e.target.value)}
+                                placeholder="Ex: 50x70cm, material especial, recorte personalizado..."
+                                className="w-full text-xs border-2 border-slate-100 rounded-xl p-4 font-bold bg-slate-50 text-slate-800 focus:border-brand-teal outline-none transition-colors"
+                            />
                         </div>
 
                         <button 
@@ -386,8 +415,9 @@ const Modal: React.FC<ModalProps> = ({
                                 onAddToCart({ 
                                     id: Math.random().toString(36).substr(2, 9), 
                                     sign, 
-                                    material: 'Vinil Adesivo', 
-                                    size: selectedSize, 
+                                    material: selectedMaterial, 
+                                    size: selectedSize,
+                                    specialSize: specialSize.trim() || undefined,
                                     quantity, 
                                     unitPrice: 0,
                                     customText: customizationMode === 'text' ? customText : undefined,

@@ -19,17 +19,19 @@ const MaterialPriceManager: React.FC<MaterialPriceManagerProps> = ({
       'Vinil Adesivo': '',
       'PVC 2mm': '',
       'PVC 3mm': '',
-      'ACM 3mm': ''
+      'ACM 3mm': '',
+      'Banner Impresso': ''
   });
 
   // Sincroniza estado local quando as props mudam ou modal abre
   useEffect(() => {
       if (isOpen) {
           setLocalPrices({
-              'Vinil Adesivo': prices['Vinil Adesivo'].toFixed(2),
-              'PVC 2mm': prices['PVC 2mm'].toFixed(2),
-              'PVC 3mm': prices['PVC 3mm'].toFixed(2),
-              'ACM 3mm': prices['ACM 3mm'].toFixed(2),
+              'Vinil Adesivo': (prices['Vinil Adesivo'] || 0).toFixed(2),
+              'PVC 2mm': (prices['PVC 2mm'] || 0).toFixed(2),
+              'PVC 3mm': (prices['PVC 3mm'] || 0).toFixed(2),
+              'ACM 3mm': (prices['ACM 3mm'] || 0).toFixed(2),
+              'Banner Impresso': (prices['Banner Impresso'] || 0).toFixed(2),
           });
       }
   }, [isOpen, prices]);
@@ -51,7 +53,7 @@ const MaterialPriceManager: React.FC<MaterialPriceManagerProps> = ({
           setLocalPrices(prev => ({ ...prev, [material]: numVal.toFixed(2) }));
       } else {
           // Reverte se inválido
-          setLocalPrices(prev => ({ ...prev, [material]: prices[material].toFixed(2) }));
+          setLocalPrices(prev => ({ ...prev, [material]: (prices[material] || 0).toFixed(2) }));
       }
   };
 
@@ -79,7 +81,7 @@ const MaterialPriceManager: React.FC<MaterialPriceManagerProps> = ({
             </p>
 
             <div className="space-y-4">
-                {(Object.keys(prices) as MaterialType[]).map((material) => (
+                {(Object.keys(localPrices) as MaterialType[]).map((material) => (
                     <div key={material} className="flex items-center justify-between bg-white p-3 rounded-lg border border-emerald-100 shadow-sm">
                         <span className="font-bold text-gray-700 text-sm">{material}</span>
                         <div className="flex items-center gap-2">

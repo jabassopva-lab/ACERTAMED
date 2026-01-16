@@ -23,13 +23,14 @@ export interface Sign {
   isHidden?: boolean; 
 }
 
-export type MaterialType = 'Vinil Adesivo' | 'PVC 2mm' | 'PVC 3mm' | 'ACM 3mm';
+export type MaterialType = 'Vinil Adesivo' | 'PVC 2mm' | 'PVC 3mm' | 'ACM 3mm' | 'Banner Impresso';
 export type SizeType = '24x34cm' | '30x44cm' | '40x60cm' | '60x80cm';
 
 export interface CartItem {
   id: string; 
   sign: Sign;
   size: SizeType;
+  specialSize?: string; // Novo campo para medidas especiais
   quantity: number;
   customText?: string; 
   customImage?: string; 

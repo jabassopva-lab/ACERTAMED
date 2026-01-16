@@ -13,7 +13,7 @@ const CatalogViewerModal: React.FC<CatalogViewerModalProps> = ({ isOpen, onClose
   return (
     <div className="fixed inset-0 z-[150] flex items-center justify-center p-0 md:p-4 bg-slate-950/95 backdrop-blur-md animate-fade-in" onClick={onClose}>
       <div 
-        className="bg-white w-full h-full md:max-w-6xl md:h-[90vh] md:rounded-2xl shadow-2xl overflow-hidden flex flex-col relative animate-fade-in-up" 
+        className="bg-white w-full h-full md:max-w-6xl md:h-[95vh] md:rounded-2xl shadow-2xl overflow-hidden flex flex-col relative animate-fade-in-up" 
         onClick={e => e.stopPropagation()}
       >
         {/* Header do Visualizador */}
@@ -34,11 +34,12 @@ const CatalogViewerModal: React.FC<CatalogViewerModalProps> = ({ isOpen, onClose
           </button>
         </div>
 
-        {/* O Frame do PDF Gerado via HTML */}
-        <div className="flex-1 bg-slate-100 relative overflow-hidden">
+        {/* O Frame do PDF Gerado via HTML - Ajustado zoom para 75% para ver mais da página */}
+        <div className="flex-1 bg-slate-100 relative overflow-hidden flex items-center justify-center">
             <iframe 
                 srcDoc={htmlContent}
                 className="w-full h-full border-none shadow-inner"
+                style={{ transform: 'scale(0.85)', transformOrigin: 'top center', height: '117.6%', width: '117.6%' }}
                 title="Catálogo Gerado"
                 sandbox="allow-scripts"
             ></iframe>
@@ -48,15 +49,15 @@ const CatalogViewerModal: React.FC<CatalogViewerModalProps> = ({ isOpen, onClose
         </div>
 
         {/* Footer com Aviso Legal */}
-        <div className="bg-slate-50 p-4 border-t border-slate-200 flex flex-col md:flex-row justify-between items-center gap-4 shrink-0">
+        <div className="bg-slate-50 p-3 border-t border-slate-200 flex flex-col md:flex-row justify-between items-center gap-2 shrink-0">
             <div className="flex items-center gap-2 text-slate-400">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
                   <path fillRule="evenodd" d="M10 1a4.5 4.5 0 0 0-4.5 4.5V9H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2h-.5V5.5A4.5 4.5 0 0 0 10 1Zm3 8V5.5a3 3 0 1 0-6 0V9h6Z" clipRule="evenodd" />
                 </svg>
-                <span className="text-[10px] font-bold uppercase tracking-widest">Somente Leitura • Download Bloqueado</span>
+                <span className="text-[9px] font-bold uppercase tracking-widest">Somente Leitura • Download Bloqueado</span>
             </div>
-            <p className="text-[10px] text-slate-500 font-medium text-center md:text-right max-w-md">
-                Este catálogo é gerado em tempo real com as placas disponíveis hoje. A impressão oficial está reservada para o administrador.
+            <p className="text-[9px] text-slate-500 font-medium text-center md:text-right max-w-md">
+                Este catálogo é gerado em tempo real. A impressão oficial está reservada para o administrador.
             </p>
         </div>
       </div>
