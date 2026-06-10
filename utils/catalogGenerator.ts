@@ -142,7 +142,7 @@ export const getCatalogHTML = (signs: Sign[], options: CatalogOptions): string =
               box-sizing: border-box; 
               overflow: hidden; 
             }
-            .cover { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; background: linear-gradient(135deg, #1D4E89 0%, #009BA5 100%); color: white; padding: 20mm; }
+            .cover { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; background: linear-gradient(135deg, #0B3C24 0%, #008751 100%); color: white; padding: 20mm; }
             .cover-logo { background: white; padding: 20px; border-radius: 12px; margin-bottom: 30px; max-width: 280px; }
             .cover-logo img { max-width: 100%; height: auto; }
             .cover h1 { font-size: 36px; font-weight: 900; margin: 0; line-height: 1; }
@@ -150,8 +150,8 @@ export const getCatalogHTML = (signs: Sign[], options: CatalogOptions): string =
             .compliance { margin-top: 40px; font-size: 14px; line-height: 1.6; max-width: 80%; opacity: 0.9; }
             .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 5px; margin-bottom: 10px; }
             .header img { height: 28px; }
-            .header .title { font-size: 10px; font-weight: 900; color: #1D4E89; text-transform: uppercase; }
-            .category-title { background: #f8fafc; padding: 5px 10px; border-left: 4px solid #009BA5; font-size: 12px; font-weight: 900; text-transform: uppercase; margin-bottom: 10px; color: #334155; }
+            .header .title { font-size: 10px; font-weight: 900; color: #0B3C24; text-transform: uppercase; }
+            .category-title { background: #f8fafc; padding: 5px 10px; border-left: 4px solid #008751; font-size: 12px; font-weight: 900; text-transform: uppercase; margin-bottom: 10px; color: #334155; }
             .category-title-cont { font-size: 9px; font-weight: 700; text-transform: uppercase; margin-bottom: 10px; color: #94a3b8; }
             .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
             .item { border: 1px solid #f1f5f9; padding: 6px; border-radius: 6px; display: flex; flex-direction: column; background: #fff; }

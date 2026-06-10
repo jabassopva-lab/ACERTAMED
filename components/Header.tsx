@@ -125,7 +125,7 @@ const Header: React.FC<HeaderProps> = ({
       <header className="bg-brand-blue text-white shadow-lg sticky top-0 z-40 border-b border-white/10">
         {/* Top bar de Versão de Teste */}
         <div className="bg-safety-yellow text-slate-900 py-1 px-4 text-center">
-            <p className="text-[10px] font-black uppercase tracking-[0.3em]">Ambiente de Demonstração • Versão de Teste</p>
+            <p className="text-[10px] font-black uppercase tracking-[0.3em]">Sinalização Agroalimentar & Industrial • Portfólio NR-31</p>
         </div>
 
         <div className="container mx-auto px-2 sm:px-4">
@@ -260,7 +260,7 @@ const Header: React.FC<HeaderProps> = ({
                 <div className="p-4 space-y-3">
                     {/* Badge Mobile */}
                     <div className="bg-safety-yellow p-2 rounded-lg text-slate-900 text-center mb-2">
-                         <span className="text-[10px] font-black uppercase">Modo de Apresentação • Versão de Teste</span>
+                         <span className="text-[10px] font-black uppercase">Sinalização Agroalimentar & Industrial • Portfólio NR-31</span>
                     </div>
 
                     {/* Public Actions */}

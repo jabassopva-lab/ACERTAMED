@@ -159,20 +159,20 @@ const CartDrawer: React.FC<CartDrawerProps> = ({
                 table { width: 100%; border-collapse: collapse; margin-top: 20px; table-layout: fixed; } 
                 th, td { border: 1px solid #eee; padding: 8px; text-align: left; font-size: 11px; word-wrap: break-word; } 
                 th { background: #f8fafc; text-transform: uppercase; font-size: 9px; color: #64748b; font-weight: 800; }
-                .header { text-align: center; border-bottom: 2px solid #1D4E89; padding-bottom: 15px; }
+                .header { text-align: center; border-bottom: 2px solid #0B3C24; padding-bottom: 15px; }
                 .logo { max-height: 60px; margin-bottom: 10px; object-fit: contain; }
                 .footer { margin-top: 30px; text-align: center; font-size: 9px; color: #94a3b8; border-top: 1px solid #eee; padding-top: 15px; }
                 .meta { margin-top: 15px; background: #f1f5f9; padding: 12px; border-radius: 8px; font-size: 11px; display: flex; justify-content: space-between; }
-                .compliance-badge { margin-top: 20px; border: 1px solid #009BA5; background: #f0fdfa; padding: 10px; border-radius: 6px; }
-                .compliance-badge h4 { color: #009BA5; margin: 0 0 4px 0; font-size: 11px; text-transform: uppercase; font-weight: 900; }
-                .compliance-badge p { margin: 0; font-size: 10px; color: #0f766e; font-weight: 500; }
+                .compliance-badge { margin-top: 20px; border: 1px solid #008751; background: #f0fdf4; padding: 10px; border-radius: 6px; }
+                .compliance-badge h4 { color: #008751; margin: 0 0 4px 0; font-size: 11px; text-transform: uppercase; font-weight: 900; }
+                .compliance-badge p { margin: 0; font-size: 10px; color: #166534; font-weight: 500; }
                 @media print { .no-print { display: none; } }
             </style>
         </head>
         <body>
             <div class="header">
                 ${logoUrl ? `<img src="${logoUrl}" class="logo" />` : ''}
-                <h1 style="margin:0; font-size: 18px; color: #1D4E89;">${storeName}</h1>
+                <h1 style="margin:0; font-size: 18px; color: #0B3C24;">${storeName}</h1>
                 <h2 style="margin:4px 0 0 0; font-size: 12px; color: #64748b;">Relatório de Sinalização Técnica</h2>
             </div>
             
