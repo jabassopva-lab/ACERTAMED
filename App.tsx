@@ -1,4 +1,6 @@
 
+
+// PWA Optimization: Manifest, description and high-resolution icons (192px / 512px) configured for PWABuilder compliance.
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import Header from './components/Header';
 import Hero from './components/Hero';
